@@ -23,9 +23,14 @@ namespace VSSolutionGenerator
 		private string mDirectory;
 		private string mRootFiltersName;
 
+		private static string NormaliseFilename(string inFilename)
+		{
+			return inFilename.Replace("/", "\\");
+		}
+
 		public SourceFiles(string inDirectory)
 		{
-			mDirectory = inDirectory;
+			mDirectory = NormaliseFilename(inDirectory);
 			mRootFiltersName = "Source";
 			mFilters.Add(mRootFiltersName);
 
@@ -61,11 +66,11 @@ namespace VSSolutionGenerator
 		{
 			List<string> newList = new List<string>();
 
-			string directory = mDirectory + "/";
+			string directory = mDirectory + "\\";
 
 			foreach (var filename in inFilenames)
 			{
-				string normalised = filename.Replace("\\", "/");
+				string normalised = NormaliseFilename(filename);
 				newList.Add(normalised.Replace(directory, ""));
 			}
 
@@ -86,10 +91,10 @@ namespace VSSolutionGenerator
 
 		public string GetFilter(string inFilename)
 		{
-			int lastIndex = inFilename.LastIndexOf("/");
+			int lastIndex = inFilename.LastIndexOf("\\");
 			if (lastIndex >= 0)
 			{
-				return mRootFiltersName + "/" + inFilename.Substring(0, lastIndex);	
+				return mRootFiltersName + "\\" + inFilename.Substring(0, lastIndex);	
 			}
 			else
 			{
@@ -157,10 +162,6 @@ namespace VSSolutionGenerator
 			XmlWriter writer = XmlWriter.Create(inTargetFilename + ".vcxproj.filters", settings);
 
 			writer.WriteStartDocument();
-				//writer.WriteStartElement("ElemName");
-				//writer.WriteAttributeString("Attr", "AttrVal");
-				//writer.WriteElementString("Elem", "ElemVal");
-				//writer.WriteEndElement();
 
 				writer.WriteStartElement("Project", "http://schemas.microsoft.com/developer/msbuild/2003");
 					writer.WriteAttributeString("ToolsVersion", "4.0");
@@ -168,9 +169,11 @@ namespace VSSolutionGenerator
 
 						foreach (var filter in inSourceFiles.mFilters)
 						{
+							var guid = System.Guid.NewGuid().ToString();
+							
 							writer.WriteStartElement("Filter");
 								writer.WriteAttributeString("Include", filter);
-								writer.WriteElementString("UniqueIdentifier", System.Guid.NewGuid().ToString());
+								writer.WriteElementString("UniqueIdentifier", "{" + guid + "}");
 							writer.WriteEndElement();
 						}
 

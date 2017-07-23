@@ -19,7 +19,7 @@ namespace VSSolutionGenerator
 			c.mUseWholeProgramOptimisation = false;
 			c.mWarningLevel = WarningLevel.Level4;
 			c.mOptimization = Optimization.Disabled;
-			c.mFunctionLevelLinking = false;
+			c.mFunctionLevelLinking = true;
 			c.mInstrinsicFunctions = false;
 			c.mEnableCOMDATFolding = false;
 			c.mOptimizeReferences = false;

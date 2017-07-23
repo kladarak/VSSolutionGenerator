@@ -111,7 +111,7 @@ namespace VSSolutionGenerator
 								writer.WriteElementString("Optimization", projConfig.GetOptimization());
 								writer.WriteElementString("FunctionLevelLinking", projConfig.GetFunctionLevelLinking());
 								writer.WriteElementString("InstrinsicFunctions", projConfig.GetInstrinsicFunctions());
-								writer.WriteElementString("PreprocesserDefinitions", projConfig.GetPreprocessorDefinitions());
+								writer.WriteElementString("PreprocessorDefinitions", projConfig.GetPreprocessorDefinitions());
 								writer.WriteElementString("TreatWarningAsError", "true");
 							writer.WriteEndElement();
 							writer.WriteStartElement("Link");

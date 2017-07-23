@@ -7,12 +7,6 @@ using System.IO;
 
 namespace VSSolutionGenerator
 {
-	class JsonInputFile
-	{
-		public string path { get; set; }
-		public string projectName { get; set; }
-	}
-
 	class Program
 	{
 		static void Main(string[] args)
@@ -23,7 +17,7 @@ namespace VSSolutionGenerator
 				return;
 			}
 
-			JsonInputFile jsonInput = ReadJSONInputFile(args[0]);
+			ProjectFileJsonData jsonInput = ReadJSONInputFile(args[0]);
 
 			if (!Directory.Exists(jsonInput.path))
 			{
@@ -39,28 +33,30 @@ namespace VSSolutionGenerator
 			}
 
 			ProjectSourceFiles sourceFiles = new ProjectSourceFiles(jsonInput.path);
+			VCXProjectData projectData = VCXProjectDataFactory.GenerateDefaultProjectData(jsonInput, sourceFiles);
 
+			VCXProjectExporter.Export(jsonInput.projectName, projectData);
 			FiltersExporter.Export(jsonInput.projectName, sourceFiles);
 		}
 
-		static JsonInputFile ReadJSONInputFile(string inFilename)
+		static ProjectFileJsonData ReadJSONInputFile(string inFilename)
 		{
 			string contents = File.ReadAllText(inFilename);
 
 			if (contents.Length == 0)
 			{
 				System.Console.WriteLine("Failed to read json input file \"" + inFilename + "\" (or it was empty)");
-				return new JsonInputFile();
+				return new ProjectFileJsonData();
 			}
 
 			try
 			{
-				return JsonConvert.DeserializeObject<JsonInputFile>(contents);
+				return JsonConvert.DeserializeObject<ProjectFileJsonData>(contents);
 			}
 			catch
 			{
 				System.Console.Write("Error parsing json file " + inFilename);
-				return new JsonInputFile();
+				return new ProjectFileJsonData();
 			}
 		}
 	}

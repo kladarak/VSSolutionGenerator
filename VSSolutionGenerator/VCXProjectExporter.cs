@@ -7,100 +7,9 @@ using System.Xml;
 
 namespace VSSolutionGenerator
 {
-	enum Platform
-	{
-		Win32,
-		x64,
-		ARM,
-	}
-
-	enum ConfigType
-	{
-		Application,
-		StaticLibrary
-	}
-
-	enum WarningLevel
-	{
-		Level3,
-		Level4,
-	}
-
-	enum Optimization
-	{
-		Disabled,
-		MaxSpeed,
-	}
-
-	class ProjectConfiguration
-	{
-		public string mConfigName;
-		public Platform mPlatform;
-		public ConfigType mConfigType;
-		public bool mUseDebugLibraries;
-		public bool mUseWholeProgramOptimisation;
-		public List<string> mIncludePaths;
-		public WarningLevel mWarningLevel;
-		public Optimization mOptimization;
-		public bool mUsePrecompiledHeader;
-		public List<string> mPreprocessorDefinitions;
-		public bool mFunctionLevelLinking;
-		public bool mInstrinsicFunctions;
-		public bool mEnableCOMDATFolding;
-		public bool mOptimizeReferences;
-
-		public string GetConfigPlatformName()
-		{
-			return mConfigName + "|" + mPlatform.ToString();
-		}
-
-		public string GetCondition()
-		{
-			return "'$(Configuration)|$(Platform)'=='" + GetConfigPlatformName() + "'";
-		}
-
-		private string BoolToString(bool inBool)
-		{
-			return inBool ? "true" : "false";
-		}
-
-		public string GetUseDebugLibraries() { return BoolToString(mUseDebugLibraries); }
-		public string GetUseWholeProgramOptimisation() { return BoolToString(mUseWholeProgramOptimisation); }
-		public string GetWarningLevel() { return mWarningLevel.ToString(); }
-		public string GetOptimization() { return mOptimization.ToString(); }
-		public string GetUsePrecompiledHeader() { return mUsePrecompiledHeader ? "Use" : "No?"; } // FIXME: Not sure what the falsey value is here
-		public string GetFunctionLevelLinking() { return BoolToString(mFunctionLevelLinking); }
-		public string GetInstrinsicFunctions() { return BoolToString(mInstrinsicFunctions); }
-		public string GetEnableCOMDATFolding() { return BoolToString(mEnableCOMDATFolding); }
-		public string GetOptimizeReferences() { return BoolToString(mOptimizeReferences); }
-		
-		private static string ConcatList(List<string> inStrings)
-		{
-			string outStr = "";
-
-			foreach (var path in inStrings)
-			{
-				outStr += path + ";";
-			}
-
-			return outStr;
-		}
-
-		public string GetIncludePaths() { return ConcatList(mIncludePaths); }
-		public string GetPreprocessorDefinitions() { return ConcatList(mPreprocessorDefinitions); }
-	}
-
-	class VCXProjectFileData
-	{
-		public string mProjectName;
-		public List<ProjectConfiguration> mProjectConfigs;
-		public List<string> mIncludeFiles;
-		public List<string> mCompileFiles;
-	}
-
 	class VCXProjectExporter
 	{
-		public static void Export(string inTargetFilename, VCXProjectFileData inData)
+		public static void Export(string inTargetFilename, VCXProjectData inData)
 		{
 			XmlWriterSettings settings = new XmlWriterSettings();
 			settings.Indent = true;
@@ -115,7 +24,7 @@ namespace VSSolutionGenerator
 					writer.WriteStartElement("ItemGroup");
 					writer.WriteAttributeString("Label", "ProjectConfigurations");
 
-					foreach (var projConfig in inData.mProjectConfigs)
+					foreach (var projConfig in inData.mConfigs)
 					{
 						writer.WriteStartElement("ProjectConfiguration");
 						writer.WriteAttributeString("Include", projConfig.GetConfigPlatformName());
@@ -139,7 +48,7 @@ namespace VSSolutionGenerator
 						writer.WriteAttributeString("Project", "$(VCTargetsPath)\\Microsoft.Cpp.Default.props");
 					writer.WriteEndElement();
 			
-					foreach (var projConfig in inData.mProjectConfigs)
+					foreach (var projConfig in inData.mConfigs)
 					{
 						writer.WriteStartElement("PropertyGroup");
 							writer.WriteAttributeString("Condition", projConfig.GetCondition());
@@ -165,7 +74,7 @@ namespace VSSolutionGenerator
 						writer.WriteAttributeString("Label", "Shared");
 					writer.WriteEndElement();
 			
-					foreach (var projConfig in inData.mProjectConfigs)
+					foreach (var projConfig in inData.mConfigs)
 					{
 						writer.WriteStartElement("ImportGroup");
 							writer.WriteAttributeString("Label", "PropertySheets");
@@ -184,7 +93,7 @@ namespace VSSolutionGenerator
 						writer.WriteAttributeString("Label", "UserMacros");
 					writer.WriteEndElement();
 			
-					foreach (var projConfig in inData.mProjectConfigs)
+					foreach (var projConfig in inData.mConfigs)
 					{
 						writer.WriteStartElement("PropertyGroup");
 							writer.WriteAttributeString("Condition", projConfig.GetCondition());
@@ -192,7 +101,7 @@ namespace VSSolutionGenerator
 						writer.WriteEndElement();
 					}
 					
-					foreach (var projConfig in inData.mProjectConfigs)
+					foreach (var projConfig in inData.mConfigs)
 					{
 						writer.WriteStartElement("ItemDefinitionGroup");
 							writer.WriteAttributeString("Condition", projConfig.GetCondition());
@@ -203,18 +112,20 @@ namespace VSSolutionGenerator
 								writer.WriteElementString("FunctionLevelLinking", projConfig.GetFunctionLevelLinking());
 								writer.WriteElementString("InstrinsicFunctions", projConfig.GetInstrinsicFunctions());
 								writer.WriteElementString("PreprocesserDefinitions", projConfig.GetPreprocessorDefinitions());
+								writer.WriteElementString("TreatWarningAsError", "true");
 							writer.WriteEndElement();
 							writer.WriteStartElement("Link");
 								writer.WriteElementString("SubSystem", "Windows");
 								writer.WriteElementString("EnableCOMDATFolding", projConfig.GetEnableCOMDATFolding());
 								writer.WriteElementString("OptimizeReferences", projConfig.GetOptimizeReferences());
+								writer.WriteElementString("AdditionalDependencies", projConfig.GetAdditionalDependencies());
 							writer.WriteEndElement();
 						writer.WriteEndElement();
 					}
 
 					writer.WriteStartElement("ItemGroup");
 
-					foreach (var includeFile in inData.mIncludeFiles)
+					foreach (var includeFile in inData.mSourceFiles.mIncludeFiles)
 					{
 						writer.WriteStartElement("ClInclude");
 							writer.WriteAttributeString("Include", includeFile);
@@ -225,11 +136,22 @@ namespace VSSolutionGenerator
 
 					writer.WriteStartElement("ItemGroup");
 			
-					foreach (var compileFile in inData.mCompileFiles)
+					foreach (var compileFile in inData.mSourceFiles.mCompileFiles)
 					{
 						writer.WriteStartElement("ClCompile");
 							writer.WriteAttributeString("Include", compileFile);
-							// TODO: Add check for precompiled header name.
+
+							foreach (var projConfig in inData.mConfigs)
+							{
+								if (projConfig.mPrecompiledHeaderName.Equals(compileFile))
+								{
+									writer.WriteStartElement("PrecompiledHeader");
+										writer.WriteAttributeString("Condition", projConfig.GetCondition());
+										writer.WriteString("Create");
+									writer.WriteEndElement();
+								}
+							}
+
 						writer.WriteEndElement();
 					}
 

@@ -1,4 +1,8 @@
 {
 	"path": "D:/Code/Sunspear/src/Core",
-	"projectName": "Core"
+	"projectName": "Core",
+	"includePaths": [
+		"../",
+		"../Externals/glm-0.9.4.3/",
+	]
 }

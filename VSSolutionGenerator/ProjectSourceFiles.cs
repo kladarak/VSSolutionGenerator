@@ -16,14 +16,9 @@ namespace VSSolutionGenerator
 		private string mDirectory;
 		private string mRootFiltersName;
 
-		private static string NormaliseFilename(string inFilename)
-		{
-			return inFilename.Replace("/", "\\");
-		}
-
 		public ProjectSourceFiles(string inDirectory)
 		{
-			mDirectory = NormaliseFilename(inDirectory);
+			mDirectory = FileUtils.NormaliseFilename(inDirectory);
 			mRootFiltersName = "Source";
 			mFilters.Add(mRootFiltersName);
 
@@ -63,7 +58,7 @@ namespace VSSolutionGenerator
 
 			foreach (var filename in inFilenames)
 			{
-				string normalised = NormaliseFilename(filename);
+				string normalised = FileUtils.NormaliseFilename(filename);
 				newList.Add(normalised.Replace(directory, ""));
 			}
 

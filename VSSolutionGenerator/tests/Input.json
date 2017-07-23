@@ -4,5 +4,7 @@
 	"includePaths": [
 		"../",
 		"../Externals/glm-0.9.4.3/",
-	]
+	],
+	"precompiledHeaderName": "stdafx",
+	"configType": "StaticLibrary"
 }

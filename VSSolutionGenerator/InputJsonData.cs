@@ -11,5 +11,7 @@ namespace VSSolutionGenerator
 		public string path { get; set; }
 		public string projectName { get; set; }
 		public List<string> includePaths { get; set; }
+		public string precompiledHeaderName { get; set; }
+		public string configType { get; set; }
 	}
 }

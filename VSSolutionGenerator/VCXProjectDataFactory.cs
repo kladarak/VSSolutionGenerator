@@ -101,39 +101,78 @@ namespace VSSolutionGenerator
 			}
 		}
 
+		public static ConfigType StrToConfigType(string inConfigType)
+		{
+			if (inConfigType.Equals("Application"))
+			{
+				return ConfigType.Application;
+			}
+			
+			if (inConfigType.Equals("StaticLibrary"))
+			{
+				return ConfigType.StaticLibrary;
+			}
+
+			return ConfigType.Application;
+		}
+
 		public static VCXProjectData GenerateDefaultProjectData(ProjectFileJsonData inProjectData, ProjectSourceFiles inSourceFiles)
 		{
 			VCXProjectData projData = new VCXProjectData();
 			projData.mProjectName = inProjectData.projectName;
 			projData.mSourceFiles = inSourceFiles;
+			
+			ConfigType configType = StrToConfigType(inProjectData.configType);
+
+			string precompiledHeader = "";
+			if (!inProjectData.precompiledHeaderName.Equals(""))
+			{
+				precompiledHeader = inProjectData.precompiledHeaderName + ".cpp";
+			}
 
 			{
 				var c = CreateDefaultDebugProjectConfig();
+				c.mConfigType = configType;
+				c.mPrecompiledHeaderName = precompiledHeader;
+
 				AppendIncludePaths(c, inProjectData.includePaths);
 				AddDefaultDefsDepsIncs(c);
+
 				projData.mConfigs.Add(c);
 			}
 			
 			{
 				var c = CreateDefaultDebugProjectConfig();
 				c.mPlatform = Platform.x64;
+				c.mConfigType = configType;
+				c.mPrecompiledHeaderName = precompiledHeader;
+
 				AppendIncludePaths(c, inProjectData.includePaths);
 				AddDefaultDefsDepsIncs(c);
+
 				projData.mConfigs.Add(c);
 			}
 			
 			{
 				var c = CreateDefaultReleaseProjectConfig();
+				c.mConfigType = configType;
+				c.mPrecompiledHeaderName = precompiledHeader;
+
 				AppendIncludePaths(c, inProjectData.includePaths);
 				AddDefaultDefsDepsIncs(c);
+
 				projData.mConfigs.Add(c);
 			}
 			
 			{
 				var c = CreateDefaultReleaseProjectConfig();
 				c.mPlatform = Platform.x64;
+				c.mConfigType = configType;
+				c.mPrecompiledHeaderName = precompiledHeader;
+
 				AppendIncludePaths(c, inProjectData.includePaths);
 				AddDefaultDefsDepsIncs(c);
+
 				projData.mConfigs.Add(c);
 			}
 

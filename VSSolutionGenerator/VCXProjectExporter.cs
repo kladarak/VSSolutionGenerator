@@ -35,11 +35,9 @@ namespace VSSolutionGenerator
 
 					writer.WriteEndElement();
 			
-					var projectGuid = System.Guid.NewGuid().ToString();
-
 					writer.WriteStartElement("PropertyGroup");
 						writer.WriteAttributeString("Label", "Globals");
-						writer.WriteElementString("ProjectGuid", "{" + projectGuid + "}");
+						writer.WriteElementString("ProjectGuid", inData.mProjectUID);
 						writer.WriteElementString("Keyword", "Win32Proj");
 						writer.WriteElementString("RootNamespace", inData.mProjectName);
 					writer.WriteEndElement();

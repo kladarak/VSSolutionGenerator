@@ -120,6 +120,7 @@ namespace VSSolutionGenerator
 		{
 			VCXProjectData projData = new VCXProjectData();
 			projData.mProjectName = inProjectData.projectName;
+			projData.mProjectUID = "{" + System.Guid.NewGuid().ToString() + "}";
 			projData.mSourceFiles = inSourceFiles;
 			
 			ConfigType configType = StrToConfigType(inProjectData.configType);

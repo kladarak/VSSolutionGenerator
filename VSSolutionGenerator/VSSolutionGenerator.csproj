@@ -53,6 +53,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="ProjectSourceFiles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SolutionExporter.cs" />
     <Compile Include="VCXProjectData.cs" />
     <Compile Include="VCXProjectDataFactory.cs" />
     <Compile Include="VCXProjectExporter.cs" />

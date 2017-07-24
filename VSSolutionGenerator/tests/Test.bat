@@ -1,3 +1,3 @@
 @echo off
 
-..\bin\Debug\VSSolutionGenerator.exe %~dp0Input.json
+..\bin\Debug\VSSolutionGenerator.exe %~dp0ProjectInput.json

@@ -9,12 +9,12 @@ namespace VSSolutionGenerator
 {
 	class VCXProjectExporter
 	{
-		public static void Export(string inTargetFilename, VCXProjectData inData)
+		public static void Export(string inFilename, VCXProjectData inData)
 		{
 			XmlWriterSettings settings = new XmlWriterSettings();
 			settings.Indent = true;
 
-			XmlWriter writer = XmlWriter.Create(inTargetFilename + ".vcxproj", settings);
+			XmlWriter writer = XmlWriter.Create(inFilename + ".vcxproj", settings);
 
 			writer.WriteStartDocument();
 				writer.WriteStartElement("Project", "http://schemas.microsoft.com/developer/msbuild/2003");

@@ -7,42 +7,13 @@ using System.IO;
 
 namespace VSSolutionGenerator
 {
-	enum BuildType
-	{
-		Debug,
-		Release
-	}
-
-	enum Architecture
-	{
-		x86,
-		x64,
-		ARM
-	}
-
-	class SolutionConfig
-	{
-		public string mName;
-		public Architecture mArchitecture;
-		public Platform mPlatform;
-		public BuildType mBuildType;
-	}
-
-	class SolutionData
-	{
-		public string mSolutionName;
-		public string mSolutionGuid; // must be surrounded with {}
-		public List<VCXProjectData> mProjects;
-		public List<SolutionConfig> mSolutionConfigs;
-	}
-
 	class SolutionExporter
 	{
 		StreamWriter mFile;
 
 		public bool Export(SolutionData inData)
 		{
-			mFile = new StreamWriter(inData.mSolutionName + ".sln");
+			mFile = new StreamWriter(inData.mSolutionFilename + ".sln");
 
 			WriteLine("");
 			WriteLine("Microsoft Visual Studio Solution File, Format Version 12.00");
@@ -76,7 +47,7 @@ namespace VSSolutionGenerator
 
 			foreach (var config in inData.mSolutionConfigs)
 			{
-				String entry = String.Format("{0)|{1}", config.mName, config.mArchitecture.ToString());
+				String entry = String.Format("{0}|{1}", config.mName, config.mArchitecture.ToString());
 				WriteLine(String.Format("\t\t{0} = {0}", entry));
 			}
 

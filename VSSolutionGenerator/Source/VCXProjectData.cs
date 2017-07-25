@@ -94,7 +94,7 @@ namespace VSSolutionGenerator
 	class VCXProjectData
 	{
 		public string mProjectName;
-		public string mProjectFilename; // including path relative to solution
+		public string mProjectFilename; // including path relative to solution, without extension
 		public string mProjectUID;
 		public List<ProjectConfiguration> mConfigs = new List<ProjectConfiguration>();
 		public ProjectSourceFiles mSourceFiles;

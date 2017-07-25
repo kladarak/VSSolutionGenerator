@@ -47,16 +47,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileUtils.cs" />
-    <Compile Include="FiltersExporter.cs" />
-    <Compile Include="InputJsonData.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="ProjectSourceFiles.cs" />
+    <Compile Include="Source\FileUtils.cs" />
+    <Compile Include="Source\FiltersExporter.cs" />
+    <Compile Include="Source\FileSettingsJsonData.cs" />
+    <Compile Include="Source\Program.cs" />
+    <Compile Include="Source\ProjectSourceFiles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SolutionExporter.cs" />
-    <Compile Include="VCXProjectData.cs" />
-    <Compile Include="VCXProjectDataFactory.cs" />
-    <Compile Include="VCXProjectExporter.cs" />
+    <Compile Include="Source\SolutionData.cs" />
+    <Compile Include="Source\SolutionDataFactory.cs" />
+    <Compile Include="Source\SolutionExporter.cs" />
+    <Compile Include="Source\SolutionGenerator.cs" />
+    <Compile Include="Source\VCXProjectData.cs" />
+    <Compile Include="Source\VCXProjectDataFactory.cs" />
+    <Compile Include="Source\VCXProjectExporter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

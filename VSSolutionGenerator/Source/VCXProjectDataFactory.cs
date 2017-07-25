@@ -116,11 +116,11 @@ namespace VSSolutionGenerator
 			return ConfigType.Application;
 		}
 
-		public static VCXProjectData GenerateDefaultProjectData(ProjectFileJsonData inProjectData, ProjectSourceFiles inSourceFiles)
+		public static VCXProjectData GenerateDefaultProjectData(ProjectSettingsJsonData inProjectData, ProjectSourceFiles inSourceFiles)
 		{
 			VCXProjectData projData = new VCXProjectData();
 			projData.mProjectName = inProjectData.projectName;
-			projData.mProjectUID = "{" + System.Guid.NewGuid().ToString() + "}";
+			projData.mProjectUID = "{" + Guid.NewGuid().ToString() + "}";
 			projData.mSourceFiles = inSourceFiles;
 			
 			ConfigType configType = StrToConfigType(inProjectData.configType);

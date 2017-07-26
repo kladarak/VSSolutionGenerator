@@ -42,9 +42,6 @@ namespace VSSolutionGenerator
 			if (!SetProjectDependencies())
 				return false;
 
-			if (!SetDataFilenames())
-				return false;
-
 			if (!CreateDirectories())
 				return false;
 
@@ -141,18 +138,6 @@ namespace VSSolutionGenerator
 
 			return true;
 		}
-
-		private bool SetDataFilenames()
-		{
-			mSolutionData.mSolutionFilename = mSolutionSettings.solutionDirectory + mSolutionSettings.solutionName;
-
-			foreach (var projData in mProjectData)
-			{
-				projData.mProjectFilename = projData.mProjectName;
-			}
-
-			return true;
-		}
 		
 		private bool CreateDirectories()
 		{
@@ -164,15 +149,16 @@ namespace VSSolutionGenerator
 		
 		private bool ExportSolutionFile()
 		{
-			return new SolutionExporter().Export(mSolutionData);
+			return new SolutionExporter().Export(mSolutionSettings.solutionDirectory, mSolutionData);
 		}
 
 		private bool ExportProjectFiles()
 		{	
+			var exporter = new VCXProjectExporter(mSolutionSettings.solutionDirectory);
+
 			foreach (var projectData in mProjectData)
 			{
-				var targetFilename = mSolutionSettings.solutionDirectory + projectData.mProjectFilename;
-				VCXProjectExporter.Export(targetFilename, projectData);
+				exporter.Export(projectData);
 			}
 
 			return true;
@@ -182,8 +168,7 @@ namespace VSSolutionGenerator
 		{
 			foreach (var projectData in mProjectData)
 			{
-				var targetFilename = mSolutionSettings.solutionDirectory + projectData.mProjectFilename;
-				FiltersExporter.Export(targetFilename, projectData.mSourceFiles);
+				FiltersExporter.Export(mSolutionSettings.solutionDirectory, projectData);
 			}
 
 			return true;

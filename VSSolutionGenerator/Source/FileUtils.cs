@@ -40,5 +40,40 @@ namespace VSSolutionGenerator
 				return default(T);
 			}
 		}
+
+		public static string GetRelativePath(string inFromPath, string inToPath)
+		{
+			var fromPath = Path.GetFullPath(inFromPath);
+			var toPath = Path.GetFullPath(inToPath);
+
+			char[] delimiter = { '\\' };
+			var fromPathDirs = fromPath.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
+			var toPathDirs = toPath.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
+
+			int skipDirCount = 0;
+
+			for (skipDirCount = 0; skipDirCount < fromPathDirs.Count(); ++skipDirCount)
+			{
+				if (skipDirCount == toPathDirs.Count())
+					break;
+
+				if (fromPathDirs[skipDirCount] != toPathDirs[skipDirCount])
+					break;
+			}
+
+			string outPath = "";
+
+			for (int i = skipDirCount; i < fromPathDirs.Count(); ++i)
+			{
+				outPath = Path.Combine(outPath, "..");
+			}
+
+			for (int i = skipDirCount; i < toPathDirs.Count(); ++i)
+			{
+				outPath = Path.Combine(outPath, toPathDirs[i]);
+			}
+
+			return outPath;
+		}
 	}
 }

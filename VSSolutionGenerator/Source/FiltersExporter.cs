@@ -4,17 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.IO;
 
 namespace VSSolutionGenerator
 {
 	class FiltersExporter
 	{
-		public static void Export(string inTargetFilename, ProjectSourceFiles inSourceFiles)
+		public static void Export(string inTargetDirectory, VCXProjectData inProjectData)
 		{
 			XmlWriterSettings settings = new XmlWriterSettings();
 			settings.Indent = true;
 
-			XmlWriter writer = XmlWriter.Create(inTargetFilename + ".vcxproj.filters", settings);
+			string filtersFilename = Path.GetFullPath(Path.Combine(inTargetDirectory, inProjectData.mProjectName + ".vcxproj.filters"));
+			XmlWriter writer = XmlWriter.Create(filtersFilename, settings);
+
+			var sourceFiles = inProjectData.mSourceFiles;
+			var sourceFilePrefix = FileUtils.GetRelativePath(inTargetDirectory, sourceFiles.mSearchDirectory);
 
 			writer.WriteStartDocument();
 
@@ -22,7 +27,7 @@ namespace VSSolutionGenerator
 					writer.WriteAttributeString("ToolsVersion", "4.0");
 					writer.WriteStartElement("ItemGroup");
 
-					foreach (var filter in inSourceFiles.mFilters)
+					foreach (var filter in sourceFiles.mFilters)
 					{
 						var guid = System.Guid.NewGuid().ToString();
 							
@@ -36,11 +41,11 @@ namespace VSSolutionGenerator
 			
 					writer.WriteStartElement("ItemGroup");
 
-					foreach (var filename in inSourceFiles.mIncludeFiles)
+					foreach (var filename in sourceFiles.mIncludeFiles)
 					{
 						writer.WriteStartElement("ClInclude");
-							writer.WriteAttributeString("Include", filename);
-							writer.WriteElementString("Filter", inSourceFiles.GetFilter(filename));
+							writer.WriteAttributeString("Include", Path.Combine(sourceFilePrefix, filename));
+							writer.WriteElementString("Filter", sourceFiles.GetFilter(filename));
 						writer.WriteEndElement();
 					}
 
@@ -48,11 +53,11 @@ namespace VSSolutionGenerator
 			
 					writer.WriteStartElement("ItemGroup");
 
-					foreach (var filename in inSourceFiles.mCompileFiles)
+					foreach (var filename in sourceFiles.mCompileFiles)
 					{
 						writer.WriteStartElement("ClCompile");
-							writer.WriteAttributeString("Include", filename);
-							writer.WriteElementString("Filter", inSourceFiles.GetFilter(filename));
+							writer.WriteAttributeString("Include", Path.Combine(sourceFilePrefix, filename));
+							writer.WriteElementString("Filter", sourceFiles.GetFilter(filename));
 						writer.WriteEndElement();
 					}
 

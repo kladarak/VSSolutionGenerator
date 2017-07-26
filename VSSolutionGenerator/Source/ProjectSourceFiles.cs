@@ -13,12 +13,13 @@ namespace VSSolutionGenerator
 		public List<string> mCompileFiles = new List<string>();
 		public List<string> mFilters = new List<string>();
 
-		private string mDirectory;
+		public string mSearchDirectory;
 		private string mRootFiltersName;
 
-		public ProjectSourceFiles(string inDirectory)
+		public ProjectSourceFiles(string inSearchDirectory)
 		{
-			mDirectory = FileUtils.NormaliseFilename(inDirectory);
+			mSearchDirectory = Path.GetFullPath(inSearchDirectory);
+
 			mRootFiltersName = "Source";
 			mFilters.Add(mRootFiltersName);
 
@@ -28,8 +29,8 @@ namespace VSSolutionGenerator
 			AddCompileFilesWithExt(".cpp");
 			AddCompileFilesWithExt(".c");
 
-			mIncludeFiles = RemoveDirectoryPath(mIncludeFiles);
-			mCompileFiles = RemoveDirectoryPath(mCompileFiles);
+			mIncludeFiles = RemoveSearchDirectoryPath(mIncludeFiles);
+			mCompileFiles = RemoveSearchDirectoryPath(mCompileFiles);
 
 			ExtractFilters(mIncludeFiles);
 			ExtractFilters(mCompileFiles);
@@ -47,19 +48,16 @@ namespace VSSolutionGenerator
 
 		private string[] GetFilesWithExt(string inExtension)
 		{
-			return Directory.GetFiles(mDirectory, "*" + inExtension, SearchOption.AllDirectories);
+			return Directory.GetFiles(mSearchDirectory, "*" + inExtension, SearchOption.AllDirectories);
 		}
 
-		private List<string> RemoveDirectoryPath(List<string> inFilenames)
+		private List<string> RemoveSearchDirectoryPath(List<string> inFilenames)
 		{
 			List<string> newList = new List<string>();
 
-			string directory = mDirectory + "\\";
-
 			foreach (var filename in inFilenames)
 			{
-				string normalised = FileUtils.NormaliseFilename(filename);
-				newList.Add(normalised.Replace(directory, ""));
+				newList.Add(filename.Replace(mSearchDirectory, ""));
 			}
 
 			return newList;

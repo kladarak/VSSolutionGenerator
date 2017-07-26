@@ -68,7 +68,7 @@ namespace VSSolutionGenerator
 		public string GetUseWholeProgramOptimisation() { return BoolToString(mUseWholeProgramOptimisation); }
 		public string GetWarningLevel() { return mWarningLevel.ToString(); }
 		public string GetOptimization() { return mOptimization.ToString(); }
-		public string GetUsePrecompiledHeader() { return mPrecompiledHeaderName.Equals("") ? "No" : "Use"; } // FIXME: Not sure what the falsey value is here
+		public string GetUsePrecompiledHeader() { return mPrecompiledHeaderName.Equals("") ? "" : "Use"; }
 		public string GetFunctionLevelLinking() { return BoolToString(mFunctionLevelLinking); }
 		public string GetInstrinsicFunctions() { return BoolToString(mInstrinsicFunctions); }
 		public string GetEnableCOMDATFolding() { return BoolToString(mEnableCOMDATFolding); }
@@ -86,7 +86,6 @@ namespace VSSolutionGenerator
 			return outStr;
 		}
 
-		public string GetIncludePaths() { return ConcatList(mIncludePaths); }
 		public string GetPreprocessorDefinitions() { return ConcatList(mPreprocessorDefinitions); }
 		public string GetAdditionalDependencies() { return ConcatList(mAdditionalDependencies); }
 	}
@@ -94,7 +93,6 @@ namespace VSSolutionGenerator
 	class VCXProjectData
 	{
 		public string mProjectName;
-		public string mProjectFilename; // including path relative to solution, without extension
 		public string mProjectUID;
 		public List<ProjectConfiguration> mConfigs = new List<ProjectConfiguration>();
 		public ProjectSourceFiles mSourceFiles;

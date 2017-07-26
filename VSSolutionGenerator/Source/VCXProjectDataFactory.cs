@@ -76,31 +76,13 @@ namespace VSSolutionGenerator
 
 			deps.Add("%(AdditionalDependencies)");
 		}
-
-		public static void AddDefaultIncludePaths(ProjectConfiguration inProjConfig)
-		{
-			var incs = inProjConfig.mIncludePaths;
-
-			incs.Add("$(ProjectDir)");
-			incs.Add("$(IncludePath)");
-		}
-
+		
 		public static void AddDefaultDefsDepsIncs(ProjectConfiguration inProjConfig)
 		{
 			AddDefaultPreprocessorDefinitions(inProjConfig);
 			AddDefaultAdditionalDependencies(inProjConfig);
-			AddDefaultIncludePaths(inProjConfig);
 		}
-
-		public static void AppendIncludePaths(ProjectConfiguration inProjConfig, List<string> inIncludePaths)
-		{
-			foreach (var path in inIncludePaths)
-			{
-				string normalised = FileUtils.NormaliseFilename(path);
-				inProjConfig.mIncludePaths.Add("$(ProjectDir)" + normalised);
-			}
-		}
-
+		
 		public static ConfigType StrToConfigType(string inConfigType)
 		{
 			if (inConfigType.Equals("Application"))
@@ -135,8 +117,8 @@ namespace VSSolutionGenerator
 				var c = CreateDefaultDebugProjectConfig();
 				c.mConfigType = configType;
 				c.mPrecompiledHeaderName = precompiledHeader;
+				c.mIncludePaths.AddRange(inProjectData.includePaths);
 
-				AppendIncludePaths(c, inProjectData.includePaths);
 				AddDefaultDefsDepsIncs(c);
 
 				projData.mConfigs.Add(c);
@@ -147,8 +129,8 @@ namespace VSSolutionGenerator
 				c.mPlatform = Platform.x64;
 				c.mConfigType = configType;
 				c.mPrecompiledHeaderName = precompiledHeader;
+				c.mIncludePaths.AddRange(inProjectData.includePaths);
 
-				AppendIncludePaths(c, inProjectData.includePaths);
 				AddDefaultDefsDepsIncs(c);
 
 				projData.mConfigs.Add(c);
@@ -158,8 +140,8 @@ namespace VSSolutionGenerator
 				var c = CreateDefaultReleaseProjectConfig();
 				c.mConfigType = configType;
 				c.mPrecompiledHeaderName = precompiledHeader;
+				c.mIncludePaths.AddRange(inProjectData.includePaths);
 
-				AppendIncludePaths(c, inProjectData.includePaths);
 				AddDefaultDefsDepsIncs(c);
 
 				projData.mConfigs.Add(c);
@@ -170,8 +152,8 @@ namespace VSSolutionGenerator
 				c.mPlatform = Platform.x64;
 				c.mConfigType = configType;
 				c.mPrecompiledHeaderName = precompiledHeader;
+				c.mIncludePaths.AddRange(inProjectData.includePaths);
 
-				AppendIncludePaths(c, inProjectData.includePaths);
 				AddDefaultDefsDepsIncs(c);
 
 				projData.mConfigs.Add(c);

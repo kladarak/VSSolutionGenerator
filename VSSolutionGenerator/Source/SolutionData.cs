@@ -30,7 +30,6 @@ namespace VSSolutionGenerator
 	class SolutionData
 	{
 		public string mSolutionName;
-		public string mSolutionFilename;
 		public string mSolutionGuid; // must be surrounded with {}
 		public List<SolutionConfig> mSolutionConfigs;
 		public List<VCXProjectData> mProjects;

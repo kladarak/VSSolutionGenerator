@@ -11,9 +11,10 @@ namespace VSSolutionGenerator
 	{
 		StreamWriter mFile;
 
-		public bool Export(SolutionData inData)
+		public bool Export(string inTargetDirectory, SolutionData inData)
 		{
-			mFile = new StreamWriter(inData.mSolutionFilename + ".sln");
+			string solutionFilename = Path.GetFullPath(inTargetDirectory) + "\\" + inData.mSolutionName + ".sln";
+			mFile = new StreamWriter(solutionFilename);
 
 			WriteLine("");
 			WriteLine("Microsoft Visual Studio Solution File, Format Version 12.00");
@@ -24,7 +25,7 @@ namespace VSSolutionGenerator
 			foreach (var project in inData.mProjects)
 			{
 				string format = "Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"";
-				WriteLine(String.Format(format, inData.mSolutionGuid, project.mProjectName, project.mProjectFilename, project.mProjectUID));
+				WriteLine(String.Format(format, inData.mSolutionGuid, project.mProjectName, project.mProjectName + ".vcxproj", project.mProjectUID));
 
 				if (project.mProjectDependencies.Count > 0)
 				{

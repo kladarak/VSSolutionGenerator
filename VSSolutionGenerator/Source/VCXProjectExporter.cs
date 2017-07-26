@@ -4,17 +4,54 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.IO;
 
 namespace VSSolutionGenerator
 {
 	class VCXProjectExporter
 	{
-		public static void Export(string inFilename, VCXProjectData inData)
+		private string mProjectFileDirectory = "";
+		private string mSourceRootDirectory = "";
+
+		private string GenerateIncludePathsEntry(List<string> inIncludePaths)
 		{
+			List<string> entries = new List<string>();
+
+			foreach (var includePath in inIncludePaths)
+			{
+				string fullPath = Path.Combine(mSourceRootDirectory, includePath);
+				string relativePath = FileUtils.GetRelativePath(mProjectFileDirectory, fullPath);
+				entries.Add("$(ProjectDir)" + relativePath);
+			}
+
+			entries.Add("$(ProjectDir)" + FileUtils.GetRelativePath(mProjectFileDirectory, mSourceRootDirectory));
+			entries.Add("$(IncludePath)");
+
+			// TODO: Pull this out into util function
+			string outString = "";
+			foreach (var path in entries)
+			{
+				outString += path + ";";
+			}
+			return outString;
+		}
+
+		public VCXProjectExporter(string inProjectFileDirectory)
+		{
+			mProjectFileDirectory = inProjectFileDirectory;
+		}
+
+		public void Export(VCXProjectData inData)
+		{
+			mSourceRootDirectory = inData.mSourceFiles.mSearchDirectory;
+
 			XmlWriterSettings settings = new XmlWriterSettings();
 			settings.Indent = true;
 
-			XmlWriter writer = XmlWriter.Create(inFilename + ".vcxproj", settings);
+			string projectFilename = Path.GetFullPath(Path.Combine(mProjectFileDirectory, inData.mProjectName + ".vcxproj"));
+			XmlWriter writer = XmlWriter.Create(projectFilename, settings);
+
+			var sourceFilePrefix = FileUtils.GetRelativePath(mProjectFileDirectory, mSourceRootDirectory);
 
 			writer.WriteStartDocument();
 				writer.WriteStartElement("Project", "http://schemas.microsoft.com/developer/msbuild/2003");
@@ -95,7 +132,7 @@ namespace VSSolutionGenerator
 					{
 						writer.WriteStartElement("PropertyGroup");
 							writer.WriteAttributeString("Condition", projConfig.GetCondition());
-							writer.WriteElementString("IncludePath", projConfig.GetIncludePaths());
+							writer.WriteElementString("IncludePath", GenerateIncludePathsEntry(projConfig.mIncludePaths));
 						writer.WriteEndElement();
 					}
 					
@@ -126,7 +163,7 @@ namespace VSSolutionGenerator
 					foreach (var includeFile in inData.mSourceFiles.mIncludeFiles)
 					{
 						writer.WriteStartElement("ClInclude");
-							writer.WriteAttributeString("Include", includeFile);
+							writer.WriteAttributeString("Include", Path.Combine(sourceFilePrefix, includeFile));
 						writer.WriteEndElement();
 					}
 
@@ -137,7 +174,7 @@ namespace VSSolutionGenerator
 					foreach (var compileFile in inData.mSourceFiles.mCompileFiles)
 					{
 						writer.WriteStartElement("ClCompile");
-							writer.WriteAttributeString("Include", compileFile);
+							writer.WriteAttributeString("Include", Path.Combine(sourceFilePrefix, compileFile));
 
 							foreach (var projConfig in inData.mConfigs)
 							{
